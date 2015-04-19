@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     private List<String> lista3;
 
 
-    TextView mainTextView;
+    TextView resultadoTextView;
     Button mainButton;
 
     @Override
@@ -93,7 +93,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        int calorias=0;
+        double calorias=0;
 
         // Obtener los valores de Sexo, Peso, Altura y Edad y realizar el cálculo.
         // Escribir el valor en mainTextView
@@ -105,12 +105,23 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         Spinner mySpinner=(Spinner) findViewById(R.id.spinnerPeso);
         int peso =  Integer.valueOf((String) mySpinner.getSelectedItem());
 
+        // Obtener altura
+        mySpinner=(Spinner) findViewById(R.id.spinnerAltura);
+        int altura =  Integer.valueOf((String) mySpinner.getSelectedItem());
+
+        // Obtener edad
+        mySpinner=(Spinner) findViewById(R.id.spinnerEdad);
+        int edad =  Integer.valueOf((String) mySpinner.getSelectedItem());
+
         // Cálculo de las calorias.
+        // Hombres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) + 5
+        // Mujeres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) - 161
         if (sexo=="Hombre") {
-            calorias = peso;
+            calorias = (10*peso) + (6.25*altura) - (5*edad) +5;
         }
 
-        mainTextView.setText(calorias);
+        resultadoTextView = (TextView) findViewById(R.id.resultado_textview);
+        resultadoTextView.setText(Double.toString(calorias));
     }
 
 }

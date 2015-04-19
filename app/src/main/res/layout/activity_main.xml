@@ -84,8 +84,8 @@
 
 
         <!-- Displays keyboard when touched -->
-        <EditText
-            android:id="@+id/main_edittext"
+        <TextView
+            android:id="@+id/resultado_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
