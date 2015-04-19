@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MetabolismoBasal</string>
+
+    <string name="textview">Calcula tu metabolismo basal</string>
+    <string name="button">Calcular</string>
+    <string name="resultado"></string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+</resources>
