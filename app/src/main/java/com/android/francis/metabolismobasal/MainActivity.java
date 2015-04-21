@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -26,8 +28,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     private List<String> lista3;
 
 
-    TextView resultadoTextView;
-    Button mainButton;
+    private TextView resultadoTextView;
+    private Button mainButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,15 +93,12 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         return true;
     }
 
+    // Al pulsar el botón Calcular: obtener los valores de Sexo, Peso, Altura y Edad y realizar el cálculo.
+    // Escribir el valor en mainTextView
     @Override
     public void onClick(View v) {
-        double calorias=0;
-
-        // Obtener los valores de Sexo, Peso, Altura y Edad y realizar el cálculo.
-        // Escribir el valor en mainTextView
-
-        // Obtener sexo
-        String sexo = "Hombre";
+        double calorias;
+        RadioGroup rdgSexo;
 
         // Obtener peso
         Spinner mySpinner=(Spinner) findViewById(R.id.spinnerPeso);
@@ -113,15 +112,21 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mySpinner=(Spinner) findViewById(R.id.spinnerEdad);
         int edad =  Integer.valueOf((String) mySpinner.getSelectedItem());
 
-        // Cálculo de las calorias.
+        // Cálculo de las calorias. La fórmula depende del Sexo
         // Hombres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) + 5
         // Mujeres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) - 161
-        if (sexo=="Hombre") {
+        // Obtener sexo
+
+        rdgSexo=(RadioGroup) findViewById(R.id.rdgSexo);
+        if ((((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString())=="@+id/rdbHombre"){
             calorias = (10*peso) + (6.25*altura) - (5*edad) +5;
+        }
+        else {
+            calorias = (10*peso) + (6.25*altura) - (5*edad) -161;
         }
 
         resultadoTextView = (TextView) findViewById(R.id.resultado_textview);
-        resultadoTextView.setText(Double.toString(calorias));
+        resultadoTextView.setText(Integer.toString((int) Math.round(calorias)));
     }
 
 }

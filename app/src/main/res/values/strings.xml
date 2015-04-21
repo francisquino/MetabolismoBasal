@@ -6,4 +6,6 @@
     <string name="resultado"></string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="rdbHombre">Hombre</string>
+    <string name="rdbMujer">Mujer</string>
 </resources>

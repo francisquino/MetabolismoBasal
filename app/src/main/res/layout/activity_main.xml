@@ -14,12 +14,26 @@
         android:text="@string/textview"/>
 
     <RadioGroup
+        android:id="@+id/rdgSexo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="30dp"
-    ></RadioGroup>
+        android:checkedButton="@+id/rdbHombre">
+
+        <RadioButton
+            android:id="@+id/rdbHombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rdbHombre"/>
+
+        <RadioButton
+            android:id="@+id/rdbMujer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rdbMujer"/>
+    </RadioGroup>
 
     <!-- This nested layout contains views of its own -->
     <LinearLayout
