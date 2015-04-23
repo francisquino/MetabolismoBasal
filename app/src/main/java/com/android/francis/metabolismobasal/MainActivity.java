@@ -1,23 +1,40 @@
 package com.android.francis.metabolismobasal;
 
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.danielme.tipsandroid.seekbar.R;
 
 import static android.view.View.OnClickListener;
 
 
 public class MainActivity extends ActionBarActivity implements OnClickListener {
+
+    private SeekBar seekBar;
+
+    private TextView textViewSeekBar;
+
 
     private Spinner spinner1;
     private Spinner spinner2;
@@ -31,6 +48,11 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
     private TextView resultadoTextView;
     private Button mainButton;
 
+    // Almacenamos el nombre entre ejecuciones
+    private static final String PREFS = "prefs";
+    private static final String PREF_NAME = "name";
+    SharedPreferences mSharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +65,52 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         // and listen for it here
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
+
+        // Greet the user, or ask for their name if new
+        displayWelcome();
+
+
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        textViewSeekBar = (TextView) findViewById(R.id.Peso);
+        textViewSeekBar.setText("20");
+
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            private Toast toastStart = Toast.makeText(MainActivity.this, getText(R.string.start), Toast.LENGTH_SHORT);
+            private Toast toastStop = Toast.makeText(MainActivity.this, getText(R.string.stop), Toast.LENGTH_SHORT);
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                //la Seekbar siempre empieza en cero, si queremos que el valor mínimo sea otro podemos modificarlo
+                textViewSeekBar.setText(progress + 20 + "");
+            }
+
+            /**
+             * El usuario inicia la interacción con la Seekbar.
+             */
+            @Override
+            public void onStartTrackingTouch(SeekBar arg0)
+            {
+                toastStop.cancel();
+                toastStart.setGravity(Gravity.TOP|Gravity.LEFT, 60, 110);
+                toastStart.show();
+            }
+
+            /**
+             * El usuario finaliza la interacción con la Seekbar.
+             */
+            @Override
+            public void onStopTrackingTouch(SeekBar arg0)
+            {
+                toastStart.cancel();
+                toastStop.setGravity(Gravity.TOP|Gravity.RIGHT, 60, 110);
+                toastStop.show();
+            }
+        });
+
+    }
 
     }
 
@@ -118,7 +186,17 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         // Obtener sexo
 
         rdgSexo=(RadioGroup) findViewById(R.id.rdgSexo);
-        if ((((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString())=="@+id/rdbHombre"){
+
+        /*Toast.makeText(MainActivity.this,
+                "Calcular para "+ ((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString(),
+                Toast.LENGTH_SHORT).show();
+        */
+
+        // Valor del botón Sexo pulsado, Hombre o Mujer.
+        String strBoton = ((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString();
+
+        // Para comparar, como son objetos, no podemos emplear ==, sino equals, para comparar sus valores.
+        if (strBoton.equals(this.getString(R.string.rdbHombre))){
             calorias = (10*peso) + (6.25*altura) - (5*edad) +5;
         }
         else {
@@ -126,7 +204,67 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         }
 
         resultadoTextView = (TextView) findViewById(R.id.resultado_textview);
-        resultadoTextView.setText(Integer.toString((int) Math.round(calorias)));
+
+        // Formatear las calorias para mostrar en pantalla
+        NumberFormat df2 = new DecimalFormat( "#,###,###,##0.00" );
+        String strCalorias = df2.format(calorias);
+
+        resultadoTextView.setText(strCalorias);
+    }
+
+    public void displayWelcome() {
+
+        // Access the device's key-value storage
+        mSharedPreferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+
+        // Read the user's name,
+        // or an empty string if nothing found
+        String name = mSharedPreferences.getString(PREF_NAME, "");
+
+        if (name.length() > 0) {
+
+            // If the name is valid, display a Toast welcoming them
+            Toast.makeText(this, "¡Bienvenido, " + name + "!", Toast.LENGTH_LONG).show();
+
+        } else {
+
+            // otherwise, show a dialog to ask for their name
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("¡Hola!");
+            alert.setMessage("¿Cual es tu nombre?");
+
+            // Create EditText for entry
+            final EditText input = new EditText(this);
+            alert.setView(input);
+
+            // Make an "OK" button to save the name
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int whichButton) {
+
+                    // Grab the EditText's input
+                    String inputName = input.getText().toString();
+
+                    // Put it into memory (don't forget to commit!)
+                    SharedPreferences.Editor e = mSharedPreferences.edit();
+                    e.putString(PREF_NAME, inputName);
+                    e.commit();
+
+                    // Welcome the new user
+                    Toast.makeText(getApplicationContext(), "¡Bienvenido, " + inputName + "!", Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Make a "Cancel" button
+            // that simply dismisses the alert
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int whichButton) {}
+            });
+
+            alert.show();
+        }
+
     }
 
 }
