@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,16 +23,13 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.danielme.tipsandroid.seekbar.R;
-
 import static android.view.View.OnClickListener;
 
 
-public class MainActivity extends ActionBarActivity implements OnClickListener {
+public class MainActivity extends ActionBarActivity implements OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    private SeekBar seekBar;
-
-    private TextView textViewSeekBar;
+    private TextView tvValor,tvAccion;
+    private SeekBar sb;
 
 
     private Spinner spinner1;
@@ -66,57 +62,40 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         mainButton = (Button) findViewById(R.id.main_button);
         mainButton.setOnClickListener(this);
 
+        // 3. SeekBar Peso
+        tvValor = (TextView) findViewById(R.id.tvSeekBarValor);
+        tvAccion = (TextView) findViewById(R.id.tvSeekBarAccion);
+
+        sb = (SeekBar) findViewById(R.id.seekBar);
+        sb.setMax(200);
+        sb.setOnSeekBarChangeListener(this);
+
         // Greet the user, or ask for their name if new
         displayWelcome();
+    }
 
-
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        textViewSeekBar = (TextView) findViewById(R.id.Peso);
-        textViewSeekBar.setText("20");
-
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            private Toast toastStart = Toast.makeText(MainActivity.this, getText(R.string.start), Toast.LENGTH_SHORT);
-            private Toast toastStop = Toast.makeText(MainActivity.this, getText(R.string.stop), Toast.LENGTH_SHORT);
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-            {
-                //la Seekbar siempre empieza en cero, si queremos que el valor mínimo sea otro podemos modificarlo
-                textViewSeekBar.setText(progress + 20 + "");
-            }
-
-            /**
-             * El usuario inicia la interacción con la Seekbar.
-             */
-            @Override
-            public void onStartTrackingTouch(SeekBar arg0)
-            {
-                toastStop.cancel();
-                toastStart.setGravity(Gravity.TOP|Gravity.LEFT, 60, 110);
-                toastStart.show();
-            }
-
-            /**
-             * El usuario finaliza la interacción con la Seekbar.
-             */
-            @Override
-            public void onStopTrackingTouch(SeekBar arg0)
-            {
-                toastStart.cancel();
-                toastStop.setGravity(Gravity.TOP|Gravity.RIGHT, 60, 110);
-                toastStop.show();
-            }
-        });
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+        tvValor.setText("Peso " + progress);
+        tvAccion.setText("Cambiando Valor");
 
     }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        tvAccion.setText("Comenzando");
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        tvAccion.setText("Finalizado");
 
     }
 
     private void datosPorDefecto() {
         //Peso en kg
-        spinner1 = (Spinner) findViewById(R.id.spinnerPeso);
+        /*spinner1 = (Spinner) findViewById(R.id.spinnerPeso);
         lista = new ArrayList<String>();
         spinner1 = (Spinner) this.findViewById(R.id.spinnerPeso);
         //Hacer un bucle para rellenar la lista. Mínimo 40 Kg. Máximo 140 kg.
@@ -125,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         }
         ArrayAdapter<String> adaptador = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, lista);
         adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner1.setAdapter(adaptador);
+        spinner1.setAdapter(adaptador);*/
 
         //Altura en cm
         spinner2 = (Spinner) findViewById(R.id.spinnerAltura);
@@ -169,11 +148,11 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         RadioGroup rdgSexo;
 
         // Obtener peso
-        Spinner mySpinner=(Spinner) findViewById(R.id.spinnerPeso);
-        int peso =  Integer.valueOf((String) mySpinner.getSelectedItem());
+        //SeekBar sbPeso=(SeekBar) findViewById(R.id.seekBarPeso);
+        int peso =  (Integer) sb.getProgress();
 
         // Obtener altura
-        mySpinner=(Spinner) findViewById(R.id.spinnerAltura);
+        Spinner mySpinner=(Spinner) findViewById(R.id.spinnerAltura);
         int altura =  Integer.valueOf((String) mySpinner.getSelectedItem());
 
         // Obtener edad

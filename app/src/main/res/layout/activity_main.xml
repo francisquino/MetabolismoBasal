@@ -37,50 +37,40 @@
 
     <!-- This nested layout contains views of its own -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:text="Peso"/>
-
-            <!-- Lista desplegable con peso -->
-            <!--Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/spinnerPeso"-->
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Peso"
+                android:id="@+id/tvSeekBarValor"
+                android:layout_gravity="center_horizontal"/>
 
             <SeekBar
-                android:id="@+id/seekPeso"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:paddingRight="20dp"
-                android:paddingLeft="20dp"/>
+                android:id="@+id/seekBar"
+                android:layout_gravity="center"
+                android:layout_marginLeft="2dp"
+                />
 
-            <!--Mostramos un TextView para poder mostrar el valor -->
             <TextView
-                android:id="@+id/Peso"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/seekBar"
-                android:layout_centerHorizontal="true"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text=""
+                android:id="@+id/tvSeekBarAccion"
+                android:layout_gravity="center"/>
         </LinearLayout>
-
 
         <TextView
             android:layout_width="wrap_content"
