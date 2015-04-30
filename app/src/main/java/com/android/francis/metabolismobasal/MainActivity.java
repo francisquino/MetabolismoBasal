@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,6 +19,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -28,9 +36,13 @@ import static android.view.View.OnClickListener;
 
 public class MainActivity extends ActionBarActivity implements OnClickListener, SeekBar.OnSeekBarChangeListener {
 
+    private static final String QUERY_URL = "http://world.openfoodfacts.org/api/v0/product/";
+    private TextView tvConsulta;
+
     private TextView tvValor,tvAccion;
     private SeekBar sb;
-
+    private Button bMenosPeso;
+    private Button bMasPeso;
 
     private Spinner spinner1;
     private Spinner spinner2;
@@ -70,8 +82,19 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         sb.setMax(200);
         sb.setOnSeekBarChangeListener(this);
 
+        // Botones para modificar el peso.
+        bMenosPeso = (Button) findViewById(R.id.bMenosSeekBarValor);
+        bMenosPeso.setOnClickListener(this);
+
+        bMasPeso = (Button) findViewById(R.id.bMasSeekBarValor);
+        bMasPeso.setOnClickListener(this);
+
         // Greet the user, or ask for their name if new
         displayWelcome();
+
+        // 9. Take what was typed into the EditText and use in search
+        tvConsulta = (TextView) findViewById(R.id.textviewConsulta);
+        queryFood(tvConsulta.getText().toString());
     }
 
     @Override
@@ -131,8 +154,6 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         spinner3.setAdapter(adaptador3);
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -140,55 +161,76 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         return true;
     }
 
+    // Evento Click.
+    // Como tengo varios botones, paso por parámetro el botón que se ha pulsado.
     // Al pulsar el botón Calcular: obtener los valores de Sexo, Peso, Altura y Edad y realizar el cálculo.
     // Escribir el valor en mainTextView
     @Override
-    public void onClick(View v) {
+    public void onClick(View arg0) {
+        int peso;
+        int altura;
+        int edad;
         double calorias;
         RadioGroup rdgSexo;
 
-        // Obtener peso
-        //SeekBar sbPeso=(SeekBar) findViewById(R.id.seekBarPeso);
-        int peso =  (Integer) sb.getProgress();
+        switch (arg0.getId()) {
+            case R.id.main_button:
+                // Calcular las calorias
+                // Obtener peso
+                //SeekBar sbPeso=(SeekBar) findViewById(R.id.seekBarPeso);
+                peso =  (Integer) sb.getProgress();
 
-        // Obtener altura
-        Spinner mySpinner=(Spinner) findViewById(R.id.spinnerAltura);
-        int altura =  Integer.valueOf((String) mySpinner.getSelectedItem());
+                // Obtener altura
+                Spinner mySpinner=(Spinner) findViewById(R.id.spinnerAltura);
+                altura =  Integer.valueOf((String) mySpinner.getSelectedItem());
 
-        // Obtener edad
-        mySpinner=(Spinner) findViewById(R.id.spinnerEdad);
-        int edad =  Integer.valueOf((String) mySpinner.getSelectedItem());
+                // Obtener edad
+                mySpinner=(Spinner) findViewById(R.id.spinnerEdad);
+                edad =  Integer.valueOf((String) mySpinner.getSelectedItem());
 
-        // Cálculo de las calorias. La fórmula depende del Sexo
-        // Hombres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) + 5
-        // Mujeres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) - 161
-        // Obtener sexo
+                // Cálculo de las calorias. La fórmula depende del Sexo
+                // Hombres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) + 5
+                // Mujeres	TMB = (10 x peso en kg) + (6,25 × altura en cm) - (5 × edad en años) - 161
+                // Obtener sexo
 
-        rdgSexo=(RadioGroup) findViewById(R.id.rdgSexo);
+                rdgSexo=(RadioGroup) findViewById(R.id.rdgSexo);
 
-        /*Toast.makeText(MainActivity.this,
+                /*Toast.makeText(MainActivity.this,
                 "Calcular para "+ ((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString(),
                 Toast.LENGTH_SHORT).show();
-        */
+                */
 
-        // Valor del botón Sexo pulsado, Hombre o Mujer.
-        String strBoton = ((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString();
+                // Valor del botón Sexo pulsado, Hombre o Mujer.
+                String strBoton = ((RadioButton) this.findViewById(rdgSexo.getCheckedRadioButtonId())).getText().toString();
 
-        // Para comparar, como son objetos, no podemos emplear ==, sino equals, para comparar sus valores.
-        if (strBoton.equals(this.getString(R.string.rdbHombre))){
-            calorias = (10*peso) + (6.25*altura) - (5*edad) +5;
+                // Para comparar, como son objetos, no podemos emplear ==, sino equals, para comparar sus valores.
+                if (strBoton.equals(this.getString(R.string.rdbHombre))){
+                    calorias = (10*peso) + (6.25*altura) - (5*edad) +5;
+                }
+                else {
+                    calorias = (10*peso) + (6.25*altura) - (5*edad) -161;
+                }
+
+                resultadoTextView = (TextView) findViewById(R.id.resultado_textview);
+
+                // Formatear las calorias para mostrar en pantalla
+                NumberFormat df2 = new DecimalFormat( "#,###,###,##0.00" );
+                String strCalorias = df2.format(calorias);
+
+                resultadoTextView.setText(strCalorias);
+                break;
+            case R.id.bMenosSeekBarValor:
+                // Pulsamos el botón Menos Peso.
+                sb.setProgress(sb.getProgress()-1);
+                tvValor.setText("Peso " + sb.getProgress());
+
+                break;
+            case R.id.bMasSeekBarValor:
+                // Pulsamos el botón Mas Peso.
+                sb.setProgress(sb.getProgress()+1);
+                tvValor.setText("Peso " + sb.getProgress());
+                break;
         }
-        else {
-            calorias = (10*peso) + (6.25*altura) - (5*edad) -161;
-        }
-
-        resultadoTextView = (TextView) findViewById(R.id.resultado_textview);
-
-        // Formatear las calorias para mostrar en pantalla
-        NumberFormat df2 = new DecimalFormat( "#,###,###,##0.00" );
-        String strCalorias = df2.format(calorias);
-
-        resultadoTextView.setText(strCalorias);
     }
 
     public void displayWelcome() {
@@ -244,6 +286,53 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
             alert.show();
         }
 
+    }
+
+    private void queryFood(String searchString) {
+
+        // Prepare your search string to be put in a URL
+        // It might have reserved characters or something
+        String urlString = "";
+
+        searchString+=".json";
+        try {
+            urlString = URLEncoder.encode(searchString, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+
+            // if this fails for some reason, let the user know why
+            e.printStackTrace();
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        // Create a client to perform networking
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        // Have the client get a JSONArray of data
+        // and define how to respond
+        client.get(QUERY_URL + urlString,
+                new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(JSONObject jsonObject) {
+                        // Display a "Toast" message
+                        // to announce your success
+                        Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
+
+                        // 8. For now, just log results
+                        Log.d("MetabolismoBasal", jsonObject.toString());
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Throwable throwable, JSONObject error) {
+                        // Display a "Toast" message
+                        // to announce the failure
+                        Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(), Toast.LENGTH_LONG).show();
+
+                        // Log error message
+                        // to help solve any problems
+                        Log.e("MetabolismoBasal", statusCode + " " + throwable.getMessage());
+                    }
+                });
     }
 
 }

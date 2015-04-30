@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:weightSum="1">
 
     <TextView
         android:id="@+id/main_textview"
@@ -36,6 +37,7 @@
     </RadioGroup>
 
     <!-- This nested layout contains views of its own -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,31 +46,49 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            xmlns:android="http://schemas.android.com/apk/res/android">
+            android:layout_height="fill_parent">
 
-            <TextView
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Peso"
-                android:id="@+id/tvSeekBarValor"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvSeekBarValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Peso    "
+                    android:layout_gravity="center_horizontal"/>
+
+                <Button
+                    android:id="@+id/bMenosSeekBarValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+
+                <Button
+                    android:id="@+id/bMasSeekBarValor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+" />
+            </LinearLayout>
 
             <SeekBar
+                android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/seekBar"
                 android:layout_gravity="center"
                 android:layout_marginLeft="2dp"
                 />
 
             <TextView
+                android:id="@+id/tvSeekBarAccion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text=""
-                android:id="@+id/tvSeekBarAccion"
                 android:layout_gravity="center"/>
         </LinearLayout>
 
@@ -124,6 +144,49 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:hint="@string/resultado" />
+
+    </LinearLayout>
+
+    <!-- This nested layout contains views of its own -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Set OnClickListener to trigger results when pressed -->
+        <Button
+            android:id="@+id/main_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:text="@string/button" />
+
+
+        <!-- Displays keyboard when touched -->
+        <TextView
+            android:id="@+id/resultado_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:hint="@string/resultado" />
+
+    </LinearLayout>
+
+    <!-- This nested layout contains views of its own -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textviewConsulta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:hint="@string/food" />
 
     </LinearLayout>
 
